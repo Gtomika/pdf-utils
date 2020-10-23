@@ -7,12 +7,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
- * This mode extracts the specifies pages to separate images.
+ * This mode extracts the specifies pages to separate images. The images will be suffixed in a way that 
+ * ABC ordering their names will give sort them in their original order. This is useful to the mode 
+ * {@link ModeImagesToPdf}, which will be able to combine these images in their original order!
  */
 public class ModeExtractToImages extends Mode {
 
@@ -70,8 +71,10 @@ public class ModeExtractToImages extends Mode {
 			int counter = 1;
 			for(int i=fromPage; i<=toPage; i++) {
 				final BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300, ImageType.RGB);
-                String fileName = destPath + "/" + imageNamePrefix + (++counter) + ".png";
+				String orderingString = (counter/10) + "_" + counter; //guaranteed the same ABC ordering
+                String fileName = destPath + "/" + imageNamePrefix + orderingString + ".png";
                 ImageIO.write(image, "png", new File(fileName));
+                counter++;
 			}
 		}
 	}

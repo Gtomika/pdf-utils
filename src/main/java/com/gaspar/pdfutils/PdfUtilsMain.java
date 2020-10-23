@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.gaspar.pdfutils.modes.Mode;
 import com.gaspar.pdfutils.modes.ModeExtractToImages;
 import com.gaspar.pdfutils.modes.ModeExtractToPdf;
+import com.gaspar.pdfutils.modes.ModeImagesToPdf;
 
 public class PdfUtilsMain {
 	
@@ -18,7 +19,7 @@ public class PdfUtilsMain {
 		Mode mode = parseMode(args);
 		String source, dest;
 		try(Scanner scanner = new Scanner(System.in)) {
-			System.out.println("Enter the source PDF file path: ");
+			System.out.println("Enter the source file path: ");
 			source = scanner.nextLine();
 			System.out.println("Enter the path where the result should be placed: ");
 			dest = scanner.nextLine();
@@ -48,7 +49,7 @@ public class PdfUtilsMain {
 					mode = new ModeExtractToImages(fromPage, toPage);
 				}
 			} catch (Exception e) {
-				throw new IllegalArgumentException("Invalid extract to image mode arguments! They must be: pageFrom, pageTo, imagePrefix.");
+				throw new IllegalArgumentException("Invalid extract to image mode arguments! They must be: pageFrom, pageTo, [optional imagePrefix].");
 			}
 			break;
 		case Mode.MODE_EXTRACT_TO_PDF:
@@ -59,6 +60,18 @@ public class PdfUtilsMain {
 				mode = new ModeExtractToPdf(fromPage, toPage, fileName);
 			} catch (Exception e) {
 				throw new IllegalArgumentException("Invalid extract to PDF mode arguments! They must be: pageFrom, pageTo, fileName.");
+			}
+			break;
+		case Mode.MODE_IMAGES_TO_PDF:
+			try {
+				String fileName = args[1];
+				if(args.length > 2) { //custom prefix
+					mode = new ModeImagesToPdf(fileName, args[2]);
+				} else { //no prefix
+					mode = new ModeImagesToPdf(fileName);
+				}
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Invalid combine images mode arguments! They must be: fileName, [optional imagePrefix].");
 			}
 			break;
 		default:

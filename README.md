@@ -4,13 +4,11 @@ This small java project can perform the following operations on PDF files:
 
 - Create images from each page in a selected range.
 - Create a sub PDF file from a selected range.
+- Assemble images into a PDF file.
 
 ## Planned functions
 
-I plan to implement these functions:
-
-- Assemble images into a PDF file.
-- Maybe more...
+README will be updated with examples on how to use the app.
 
 A *JavaFx* or *Swing* UI is planned as well.
 
