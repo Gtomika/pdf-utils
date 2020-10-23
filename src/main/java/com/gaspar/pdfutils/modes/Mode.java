@@ -9,9 +9,13 @@ import java.io.IOException;
 public abstract class Mode {
 
 	/**
-	 * This mode extracts the specifies pages to separate images.
+	 * This mode extracts the pages in range to separate images.
 	 */
 	public static final String MODE_EXTRACT_TO_IMAGES = "--EXTRACT_TO_IMAGES";
+	/**
+	 * This mode extracts the pages in range to a separate pdf file.
+	 */
+	public static final String MODE_EXTRACT_TO_PDF = "--EXTRACT_TO_PDF";
 	
 	/**
 	 * One of the mode constants

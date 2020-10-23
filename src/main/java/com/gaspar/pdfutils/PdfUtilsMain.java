@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import com.gaspar.pdfutils.modes.Mode;
 import com.gaspar.pdfutils.modes.ModeExtractToImages;
+import com.gaspar.pdfutils.modes.ModeExtractToPdf;
 
 public class PdfUtilsMain {
 	
@@ -48,6 +49,16 @@ public class PdfUtilsMain {
 				}
 			} catch (Exception e) {
 				throw new IllegalArgumentException("Invalid extract to image mode arguments! They must be: pageFrom, pageTo, imagePrefix.");
+			}
+			break;
+		case Mode.MODE_EXTRACT_TO_PDF:
+			try {
+				int fromPage = Integer.parseInt(args[1]);
+				int toPage = Integer.parseInt(args[2]);
+				String fileName = args[3];
+				mode = new ModeExtractToPdf(fromPage, toPage, fileName);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Invalid extract to PDF mode arguments! They must be: pageFrom, pageTo, fileName.");
 			}
 			break;
 		default:
