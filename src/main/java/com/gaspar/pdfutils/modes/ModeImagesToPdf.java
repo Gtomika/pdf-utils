@@ -8,17 +8,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.JPanel;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
+import com.gaspar.pdfutils.gui.ModeImagesToPdfPanel;
+
 /**
  * This mode combines images into a single pdf files, with each image as a page. This works best when 
  * the images are extracted PDF pages. Works only for PNG images.
  * <p>
- * Warning: images in the source folder are compiled in ABC ordering.
+ * Warning: images in the source folder are combined in ABC ordering.
  * @author Gáspár Tamás
  */
 public class ModeImagesToPdf extends Mode {
@@ -53,6 +57,14 @@ public class ModeImagesToPdf extends Mode {
 		this.name = name;
 	}
 
+	/**
+	 * A default constructor to create a mode object only for dislaying name 
+	 * and description. {@link #execute(String, String)} should not be called on this!
+	 */
+	public ModeImagesToPdf() {
+		this("combined","img_");
+	}
+	
 	/**
 	 * Combines images into a PDF file.
 	 * @param sourcePath This is the folder where the images are. 
@@ -97,5 +109,15 @@ public class ModeImagesToPdf extends Mode {
 			valid = fileName.startsWith(imagePrefix);
 		}
 		return valid;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Combine images into a PDF file. This works best if the images are extracted PDF pages.";
+	}
+
+	@Override
+	public JPanel getModePanel() {
+		return new ModeImagesToPdfPanel();
 	}
 }
