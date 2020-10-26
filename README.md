@@ -15,12 +15,15 @@ I plan to add another operation, PDF encrypt and decrypt.
 ## Images
 
 The mode selection menu:
+
 ![Mode Selection](/demo_images/mode_selection.png)
 
 Extracting pages as images:
+
 ![Extract Pages](/demo_images/extract_images.png)
 
 Page selector tool:
+
 ![Selector tool](/demo_images/selector_tool.png)
 
 ## Credit to Apache PDFBox
