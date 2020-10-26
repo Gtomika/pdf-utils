@@ -2,17 +2,19 @@ package com.gaspar.pdfutils.gui;
 
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -41,6 +43,10 @@ public class ModeExtractToImagesPanel extends JPanel {
 	 * Optionally, enter the password for the PDF here.
 	 */
 	private final JPasswordField passwordField = new JPasswordField();
+	/**
+	 * This field stores the image prefix input.
+	 */
+	private final JTextField prefixField = new JTextField("img_");
 	
 	public ModeExtractToImagesPanel() {
 		final JPanel container = new JPanel();
@@ -106,8 +112,19 @@ public class ModeExtractToImagesPanel extends JPanel {
 		selectDestButton.addActionListener(Listeners.openFolderSelector(destPathField));
 		destPanel.add(selectDestButton);
 		container.add(destPanel);
+		
+		JPanel imagePrefixFlow = new JPanel(new FlowLayout(20)); //prefix
+		JLabel prefixLabel = new JLabel("Image prefix:");
+		prefixLabel.setFont(font);
+		imagePrefixFlow.add(prefixLabel);
+		prefixField.setToolTipText("Generated images will be prefixed with this. Must not be empty.");
+		prefixField.setColumns(5);
+		prefixField.setFont(font);
+		imagePrefixFlow.add(prefixField);
+		container.add(imagePrefixFlow);
 	}
 	
+	//card layout ID
 	private static final String PAGE_RANGE = "pr", INDIVIDUAL_PAGES = "ip";
 	
 	/**
@@ -171,17 +188,7 @@ public class ModeExtractToImagesPanel extends JPanel {
 		JTextField toField = new JTextField();
 		toField.setColumns(2);
 		pageRangeFlow.add(toField);
-		
 		pageRangePanel.add(pageRangeFlow);
-		
-		JPanel pageRangeFlow2 = new JPanel(new FlowLayout(20)); //prefix
-		JLabel prefixLabel = new JLabel("Image prefix: ");
-		pageRangeFlow2.add(prefixLabel);
-		JTextField prefixField = new JTextField("img_");
-		prefixField.setToolTipText("Generated images will be prefixed with this. Must not be empty.");
-		prefixField.setColumns(5);
-		pageRangeFlow2.add(prefixField);
-		pageRangePanel.add(pageRangeFlow2);
 		
 		JButton executeOperationButton = new JButton("Extract pages");
 		executeOperationButton.setFont(font);
@@ -196,18 +203,74 @@ public class ModeExtractToImagesPanel extends JPanel {
 		
 		final JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		wrapper.add(executeOperationButton);
+		JButton previewButton = new JButton("Preview pages");
+		previewButton.setFont(font);
+		previewButton.addActionListener(e -> { //allows the user to preview the page range. no modification allowed inside the dialog
+			try {
+				int pageFrom = Integer.parseInt(fromField.getText());
+				int pageTo = Integer.parseInt(toField.getText());
+				if(pageTo < pageFrom) throw new NumberFormatException();
+				List<Integer> pageNumbers = new ArrayList<>();
+				for(int i=pageFrom; i<=pageTo; i++) pageNumbers.add(i);
+				
+				PageViewerDialog dialog = new PageViewerDialog(pageNumbers, sourcePathField.getText(), false);
+				if(passwordField.getPassword().length>0) dialog.setPassword(new String(passwordField.getPassword()));
+				dialog.showPages();
+			} catch(Exception exc) { //could not even build page numbers from user input
+				String fromInput = fromField.getText().isEmpty() ? "[EMPTY]" : fromField.getText();
+				String toInput = toField.getText().isEmpty() ? "[EMPTY]" : toField.getText();
+				JOptionPane.showMessageDialog(PdfUtilsMain.getFrame(), fromInput+" and "+toInput+
+						" is not a valid range of pages!","Invalid pages", JOptionPane.ERROR_MESSAGE);
+			}
+		}); 
+		wrapper.add(previewButton);
 		pageRangePanel.add(wrapper);
-		
 		return pageRangePanel;
 	}
 	
 	/**
-	 * Create the panel that allows the user to select individual pages. This happens with a dialog that displays the pages.
+	 * Create the panel that allows the user to select individual pages. This happens with a dialog that displays the pages, or 
+	 * a comma separated string with page numbers can be entered.
 	 * @param Font Applied to the texts.
 	 * @return The panel.
 	 */
 	private JPanel createIndividualRangePanel(final Font font) {
 		JPanel individualPagesPanel = new JPanel(new GridLayout(0,1));
+		individualPagesPanel.setFont(font);
+		
+		JPanel pageSpecFlow = new JPanel(new FlowLayout(20));
+		pageSpecFlow.add(new JLabel("Pages to be extracted:"));
+		final JTextField csvPagesField = new JTextField();
+		csvPagesField.setToolTipText("Separate page numbers with a comma, or use the selector tool!");
+		csvPagesField.setColumns(20);
+		pageSpecFlow.add(csvPagesField);
+		individualPagesPanel.add(pageSpecFlow);
+		
+		JPanel buttonFlow = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JButton executeButton = new JButton("Extract");
+		executeButton.setFont(font);
+		executeButton.addActionListener(e -> ModeExtractToImages.attemptImageExtraction(csvPagesField.getText(),
+													   prefixField.getText(),
+													   sourcePathField.getText(),
+													   destPathField.getText(),
+													   new String(passwordField.getPassword())));
+		buttonFlow.add(executeButton);
+		JButton selectorButton = new JButton("Select pages"); //select pages tool
+		selectorButton.setFont(font);
+		selectorButton.addActionListener(e -> {
+			PageViewerDialog dialog = new PageViewerDialog(sourcePathField.getText(), true);
+			if(passwordField.getPassword().length>0) dialog.setPassword(new String(passwordField.getPassword()));
+			List<Integer> selectedPages = dialog.showPagesForResult();
+			//make csv string from result
+			StringBuilder b = new StringBuilder();
+			for(int i=0; i<selectedPages.size();i++) {
+				b.append(selectedPages.get(i));
+				if(i<selectedPages.size()-1) b.append(",");
+			}
+			csvPagesField.setText(b.toString());
+		});
+		buttonFlow.add(selectorButton);
+		individualPagesPanel.add(buttonFlow);
 		
 		return individualPagesPanel;
 	}
