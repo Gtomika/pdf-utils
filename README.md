@@ -6,11 +6,22 @@ This small java project can perform the following operations on PDF files:
 - Create a sub PDF file from a selected range.
 - Assemble images into a PDF file.
 
+It comes with a *Swing GUI*. Currently **only the first operation** is supported by the GUI!
+
 ## Planned functions
 
-README will be updated with examples on how to use the app.
+I plan to add another operation, PDF encrypt and decrypt.
 
-A *JavaFx* or *Swing* UI is planned as well.
+## Images
+
+The mode selection menu:
+![Mode Selection](/demo_images/mode_selection.png)
+
+Extracting pages as images:
+![Extract Pages](/demo_images/extract_images.png)
+
+Page selector tool:
+![Selector tool](/demo_images/selector_tool.png)
 
 ## Credit to Apache PDFBox
 
