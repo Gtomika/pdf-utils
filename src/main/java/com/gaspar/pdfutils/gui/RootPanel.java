@@ -1,6 +1,7 @@
 package com.gaspar.pdfutils.gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -11,16 +12,29 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import com.gaspar.pdfutils.PdfUtilsMain;
 
 /**
- * This is the root layout of the {@link PdfUtilsMain#getFrame()}.
+ * This is the root layout of the {@link PdfUtilsMain#getFrame()}. This is a singleton
  * @author Gáspár Tamás
  */
 public class RootPanel extends JPanel {
+	
+	/**
+	 * Singleton instance.
+	 */
+	private static final RootPanel instance = new RootPanel();
+	/**
+	 * Get the instance of the root panel.
+	 * @return The instance.
+	 */
+	public static synchronized RootPanel getInstance() {
+		return instance;
+	}
 
 	/**
 	 * Icons will be displayed in this size.
@@ -38,7 +52,7 @@ public class RootPanel extends JPanel {
 	 */
 	private final JButton backButton = new JButton("Exit");
 	
-	public RootPanel() {
+	private RootPanel() {
 		super();
 		BorderLayout rootLayout = new BorderLayout(5,5);
 		setLayout(rootLayout);
@@ -51,7 +65,7 @@ public class RootPanel extends JPanel {
 		add(createSouthPanel(), BorderLayout.PAGE_END);
 		
 		//set the central part as the mode selector
-		add(new ModeSelectPanel(this), BorderLayout.CENTER);
+		add(new ModeSelectPanel(), BorderLayout.CENTER);
 	}
 	
 	/**
@@ -69,6 +83,7 @@ public class RootPanel extends JPanel {
 		githubButton.setBorder(new CompoundBorder(githubButton.getBorder(), new EmptyBorder(new Insets(10, 10, 10, 10))));
 		githubButton.setPreferredSize(ICON_SIZE);
 		JPanel wrapper = new JPanel(new FlowLayout()); //this must be used to have a margin...
+		wrapper.setPreferredSize(new Dimension(60,60));
 		wrapper.add(githubButton);
 		northPanel.add(wrapper, BorderLayout.LINE_END);
 		
@@ -85,15 +100,89 @@ public class RootPanel extends JPanel {
 	}
 	
 	/**
-	 * Builds the always visible south panel, which contains the {@link #backButton}.
+	 * Builds the always visible south panel, which contains the {@link #backButton} and {@link #operationPanel}.
 	 * @return South Panel
 	 */
 	private JPanel createSouthPanel() {
-		FlowLayout sl = new FlowLayout(5);
-		sl.setAlignment(FlowLayout.LEFT);
-		JPanel southPanel = new JPanel(sl);
-		southPanel.add(backButton);
+		JPanel southPanel = new JPanel(new BorderLayout());
+		JPanel wrapper = new JPanel(new FlowLayout(5));
+		wrapper.add(backButton);
+		southPanel.add(wrapper, BorderLayout.LINE_START);
+		
+		southPanel.add(createOperationProgressPanel(), BorderLayout.LINE_END);
 		return southPanel;
+	}
+	
+	/**
+	 * Card layout ID to show no operation text.
+	 */
+	public static final String NO_OPERATION = "no_op";
+	/**
+	 * Card layout ID to show operation done text.
+	 */
+	public static final String OPERATION_DONE = "op_done";
+	/**
+	 * Card layout ID to show progress bar.
+	 */
+	public static final String OPERATION_IN_PROGRESS = "op_in_prog";
+	/**
+	 * Controls {@link #operationPanel}. Use {@link #changeOperationPanel(String)} to update it.
+	 */
+	private final CardLayout operationCards = new CardLayout();
+	/**
+	 * Shows the operation status. Use {@link #changeOperationPanel(String)} 
+	 * and {@link #updateOperationProgress(int)} to control it.
+	 */
+	private final JPanel operationPanel = new JPanel(operationCards);
+	/**
+	 * Displays the progress of an ongoing operation. Only shown when {@link #operationCards} is showing {@link #OPERATION_IN_PROGRESS}.
+	 * Use {@link #updateOperationProgress(int)} to update the value.
+	 */
+	private JProgressBar operationBar = new JProgressBar(0,100);
+	
+	/**
+	 * Builds {@link #operationPanel} that displays the ongoing operation. This is a card layout panel. Use {@link #changeOperationPanel(String)} 
+	 * and {@link #updateOperationProgress(int)} to control it.
+	 * @return Operation panel
+	 */
+	private JPanel createOperationProgressPanel() {
+		final Font f = new Font("SansSerif",Font.PLAIN,15);
+		operationPanel.setAlignmentY(RIGHT_ALIGNMENT);
+		JLabel noOpLabel = new JLabel("No ongoing operation.");
+		noOpLabel.setFont(f);
+		operationPanel.add(noOpLabel, NO_OPERATION);
+		JLabel opDoneLabel = new JLabel("Operation complete.");
+		opDoneLabel.setFont(f);
+		operationPanel.add(opDoneLabel, OPERATION_DONE);
+		
+		final FlowLayout fl = new FlowLayout(20);
+		fl.setAlignment(FlowLayout.RIGHT);
+		JPanel progressPanel = new JPanel(fl);
+		JLabel l = new JLabel("Operation in progress");
+		l.setFont(f);
+		progressPanel.add(l);
+		operationBar.setValue(0);
+		progressPanel.add(operationBar);
+		operationPanel.add(progressPanel, OPERATION_IN_PROGRESS);
+		
+		operationCards.show(operationPanel, NO_OPERATION); //no operations happening on start
+		return operationPanel;
+	}
+	
+	/**
+	 * Updates the operation panel to display something else.
+	 * @param status Should be one of {@link #NO_OPERATION}, {@link #OPERATION_DONE} or {@link #OPERATION_IN_PROGRESS}.
+	 */
+	public void changeOperationPanel(String status) {
+		operationCards.show(operationPanel, status);
+	}
+	
+	/**
+	 * Updates {@link #operationBar}.
+	 * @param progress The new progress. Must be between 0 and 100.
+	 */
+	public void updateOperationProgress(int progress) {
+		operationBar.setValue(progress);
 	}
 
 	public JLabel getTitleLabel() {

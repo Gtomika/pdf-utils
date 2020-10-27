@@ -25,7 +25,9 @@ public class PdfUtilsMain {
 		frame.addWindowListener(Listeners.getWindowCloseListener());
         frame.setLocationRelativeTo(null);
         frame.setIconImage(new ImageIcon(PdfUtilsMain.class.getResource("/res/icon.png")).getImage());
-        frame.getContentPane().add(new RootPanel(), BorderLayout.CENTER); //RootPanel will take care of the GUI
+        
+        final RootPanel root = RootPanel.getInstance();
+        frame.getContentPane().add(root, BorderLayout.CENTER); //RootPanel will take care of the GUI
         frame.pack();
         frame.setVisible(true);
 	}

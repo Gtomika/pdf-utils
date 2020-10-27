@@ -40,7 +40,7 @@ public class ModeSelectPanel extends JPanel {
 	 */
 	private final JTextArea descDisplay = new JTextArea("Choose an option to see a description!",2,30);
 	
-	public ModeSelectPanel(final RootPanel root) {
+	public ModeSelectPanel() {
 		JPanel container = new JPanel();
 		container.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		add(container);
@@ -68,6 +68,7 @@ public class ModeSelectPanel extends JPanel {
 		selectButton.setFont(new Font("SansSerif",Font.PLAIN, 15));
 		selectButton.addActionListener(e -> { //selected mode panel will replace this panel as center in the root
 			if(selectedMode != null) {
+				final RootPanel root = RootPanel.getInstance();
 				root.remove(this);
 				final JPanel modePanel = selectedMode.getModePanel();
 				root.add(modePanel, BorderLayout.CENTER);
@@ -76,7 +77,7 @@ public class ModeSelectPanel extends JPanel {
 				root.getBackButton().removeActionListener(root.getBackButton().getActionListeners()[0]);
 				root.getBackButton().addActionListener(e1 -> { //on click it will not exit anymore, but go back
 					root.remove(modePanel);
-					root.add(new ModeSelectPanel(root), BorderLayout.CENTER);
+					root.add(new ModeSelectPanel(), BorderLayout.CENTER);
 					root.getBackButton().setText("Exit");
 					root.getBackButton().removeActionListener(root.getBackButton().getActionListeners()[0]);
 					root.getBackButton().addActionListener(Listeners.getExitListener()); //make back button an exit button again

@@ -22,8 +22,7 @@ import com.gaspar.pdfutils.gui.PageViewerDialog;
  * This thread loads images/PDF pages into an {@link PageViewerDialog}. When it finishes, it will update the 
  * GUI to show the images/pages. It basically calls {@link PageViewerDialog#buildPageViewerPane(org.apache.pdfbox.pdmodel.PDDocument)} in the background.
  * <p>
- * This is differemt from {@link OperationThread}, this won't count as an operation, so the program can close if this is 
- * working.
+ * This is differemt from {@link OperationThread}, this won't count as an operation, so the program can close if this is working.
  * @author Gáspár Tamás
  */
 public class DialogFillerThread extends Thread {
@@ -68,9 +67,5 @@ public class DialogFillerThread extends Thread {
 				dialog.pack();
 			});
 		}
-	}
-	
-	public void kill() {
-		
 	}
 }

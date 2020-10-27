@@ -124,7 +124,7 @@ public class ModeExtractToImagesPanel extends JPanel {
 		container.add(imagePrefixFlow);
 	}
 	
-	//card layout ID
+	//card layout IDs
 	private static final String PAGE_RANGE = "pr", INDIVIDUAL_PAGES = "ip";
 	
 	/**

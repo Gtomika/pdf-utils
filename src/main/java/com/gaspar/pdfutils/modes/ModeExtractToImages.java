@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -20,6 +21,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import com.gaspar.pdfutils.OperationThread;
 import com.gaspar.pdfutils.PdfUtilsMain;
 import com.gaspar.pdfutils.gui.ModeExtractToImagesPanel;
+import com.gaspar.pdfutils.gui.RootPanel;
 
 /**
  * This mode extracts the specifies pages to separate images. The images will be suffixed in a way that 
@@ -91,7 +93,8 @@ public class ModeExtractToImages extends Mode {
 	}
 
 	/**
-	 * Extracts the specified pages and converts them into images.
+	 * Extracts the specified pages and converts them into images. This is run on an {@link OperationThread} in the background, so 
+	 * changes to the GUI must be made with {@link SwingUtilities#invokeLater(Runnable)}.
 	 * @param sourcePdfPath The path of the selected pdf file.
 	 * @param destinationPath The path where the images will be placed.
 	 * @throws IOException When the source or destination cant be opened.
@@ -99,6 +102,9 @@ public class ModeExtractToImages extends Mode {
 	@Override
 	public void execute(String sourcePdfPath, String destPath) throws IOException {
 		try(PDDocument document = password==null ? PDDocument.load(new File(sourcePdfPath)) : PDDocument.load(new File(sourcePdfPath), password)) {
+			
+			SwingUtilities.invokeLater(() -> RootPanel.getInstance().updateOperationProgress(0)); //show 0 progress
+			
 			final PDFRenderer pdfRenderer = new PDFRenderer(document);
 			
 			List<Integer> _pageNumbers = null; //fill a list with 0 based indices
@@ -127,6 +133,10 @@ public class ModeExtractToImages extends Mode {
                 String fileName = destPath + "/" + imageNamePrefix + orderingString + ".png";
                 ImageIO.write(image, "png", new File(fileName));
                 counter++;
+                
+                //update operation progress on GUI
+                final int newPercent = (int)(100*(Double.valueOf(i)/_pageNumbers.size()));
+                SwingUtilities.invokeLater(() -> RootPanel.getInstance().updateOperationProgress(newPercent));
 			}
 		}
 	}
