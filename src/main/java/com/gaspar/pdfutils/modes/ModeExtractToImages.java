@@ -98,9 +98,10 @@ public class ModeExtractToImages extends Mode {
 	 * @param sourcePdfPath The path of the selected pdf file.
 	 * @param destinationPath The path where the images will be placed.
 	 * @throws IOException When the source or destination cant be opened.
+	 * @throws InvalidPasswordException When the specified password is incorrect.
 	 */
 	@Override
-	public void execute(String sourcePdfPath, String destPath) throws IOException {
+	public void execute(String sourcePdfPath, String destPath) throws IOException, InvalidPasswordException {
 		try(PDDocument document = password==null ? PDDocument.load(new File(sourcePdfPath)) : PDDocument.load(new File(sourcePdfPath), password)) {
 			
 			SwingUtilities.invokeLater(() -> RootPanel.getInstance().updateOperationProgress(0)); //show 0 progress
@@ -149,10 +150,12 @@ public class ModeExtractToImages extends Mode {
 	 * @param imagePrefix Prefix of generated images.
 	 * @param sourcePath Path of PDF file.
 	 * @param destPath Path of the images.
+	 * @param password Password for the source PDF file.
 	 */
 	public static void attemptImageExtraction(String fromPage, String toPage, String imagePrefix, String sourcePath, String destPath, String password) {
 		if(imagePrefix.isEmpty()) {
 			JOptionPane.showMessageDialog(PdfUtilsMain.getFrame(), "There must be an image prefix!", "Invalid prefix", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 		int fromPageInt, toPageInt;
 		try {
@@ -160,7 +163,7 @@ public class ModeExtractToImages extends Mode {
 			toPageInt = Integer.parseInt(toPage);
 			
 			ModeExtractToImages mode = new ModeExtractToImages(fromPageInt, toPageInt, imagePrefix);
-			if(!password.isEmpty()) mode.setPassword(password);
+			if(!password.isEmpty()) mode.password = password;
 			//this handler displays dialogs from background exceptions
 			Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
 			    @Override
@@ -194,11 +197,13 @@ public class ModeExtractToImages extends Mode {
 	 * @param imagePrefix Prefix of generated images.
 	 * @param sourcePath Path of PDF file.
 	 * @param destPath Path of the images.
+	 * @param password Password for the source PDF file.
 	 */
 	public static void attemptImageExtraction(String csvPages, String imagePrefix, String sourcePath, String destPath, String password) {
 		try {
 			if(imagePrefix.isEmpty()) {
 				JOptionPane.showMessageDialog(PdfUtilsMain.getFrame(), "There must be an image prefix!", "Invalid prefix", JOptionPane.ERROR_MESSAGE);
+				return;
 			}
 			
 			List<Integer> pageNumbers = Arrays.asList(csvPages.split(",")).stream()
@@ -206,7 +211,7 @@ public class ModeExtractToImages extends Mode {
 					.collect(Collectors.toList()); //attempt to convert them into a valid int list
 			
 			ModeExtractToImages mode = new ModeExtractToImages(pageNumbers, imagePrefix);
-			if(!password.isEmpty()) mode.setPassword(password);
+			if(!password.isEmpty()) mode.password = password;
 			
 			//this handler displays dialogs from background exceptions
 			Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
@@ -241,13 +246,5 @@ public class ModeExtractToImages extends Mode {
 	@Override
 	public JPanel getModePanel() {
 		return new ModeExtractToImagesPanel();
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 }

@@ -71,7 +71,8 @@ public class PageViewerDialog extends JDialog {
 	private String password;
 	
 	/**
-	 * Create a dialog. If there is an exception during opening the required pages, that that will be shown instead of the pages.
+	 * Create a dialog. If there is an exception during opening the required pages, that that will be shown instead of the pages. Use 
+	 * {@link #startFilling()} to start loading the pages.
 	 * @param pageNumbers Shows these pages from the document. These are 1 based!
 	 * @param path Path to the document.
 	 * @param selectAllowed Allow or disallow selection.
@@ -99,9 +100,6 @@ public class PageViewerDialog extends JDialog {
 		progressIndicatorPane.add(new JLabel("Loading pages, please wait..."), BorderLayout.PAGE_START);
 		progressIndicatorPane.add(bar, BorderLayout.PAGE_END);
 		add(progressIndicatorPane, BorderLayout.PAGE_START);
-		
-		final DialogFillerThread fillerThread = new DialogFillerThread(this); //this will load in the pages and show them when done
-		fillerThread.start();
 		
 		JButton okButton = new JButton("OK");
 		okButton.setPreferredSize(new Dimension(100,50));
@@ -198,6 +196,16 @@ public class PageViewerDialog extends JDialog {
 			if(imagePanels.get(pageNumber).isSelected()) selectedPages.add(pageNumber);
 		}
 		return selectedPages; //has 1 based numbers, ready to display in the UI
+	}
+	
+	/**
+	 * Starts loading the pages/images into the dialog using a {@link DialogFillerThread}. Must be called only after 
+	 * all paramters of the {@link PageViewerDialog} are set.
+	 */
+	public void startFilling() {
+		final DialogFillerThread fillerThread = new DialogFillerThread(this); //this will load in the pages and show them when done
+		fillerThread.start();
+		
 	}
 	
 	public String getPath() {

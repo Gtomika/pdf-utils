@@ -118,10 +118,6 @@ public class RootPanel extends JPanel {
 	 */
 	public static final String NO_OPERATION = "no_op";
 	/**
-	 * Card layout ID to show operation done text.
-	 */
-	public static final String OPERATION_DONE = "op_done";
-	/**
 	 * Card layout ID to show progress bar.
 	 */
 	public static final String OPERATION_IN_PROGRESS = "op_in_prog";
@@ -151,9 +147,6 @@ public class RootPanel extends JPanel {
 		JLabel noOpLabel = new JLabel("No ongoing operation.");
 		noOpLabel.setFont(f);
 		operationPanel.add(noOpLabel, NO_OPERATION);
-		JLabel opDoneLabel = new JLabel("Operation complete.");
-		opDoneLabel.setFont(f);
-		operationPanel.add(opDoneLabel, OPERATION_DONE);
 		
 		final FlowLayout fl = new FlowLayout(20);
 		fl.setAlignment(FlowLayout.RIGHT);
@@ -171,7 +164,7 @@ public class RootPanel extends JPanel {
 	
 	/**
 	 * Updates the operation panel to display something else.
-	 * @param status Should be one of {@link #NO_OPERATION}, {@link #OPERATION_DONE} or {@link #OPERATION_IN_PROGRESS}.
+	 * @param status Should be one of {@link #NO_OPERATION} or {@link #OPERATION_IN_PROGRESS}.
 	 */
 	public void changeOperationPanel(String status) {
 		operationCards.show(operationPanel, status);

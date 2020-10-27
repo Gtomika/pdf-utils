@@ -132,7 +132,7 @@ public class ModeExtractToImagesPanel extends JPanel {
 	 * @param container Will be added to this.
 	 * @param font Texts will have this font.
 	 */
-	private void addPageSelectingTools(JPanel container, Font font) {
+	private void addPageSelectingTools(final JPanel container, final Font font) {
 		JLabel pagesDesc = new JLabel("Choose the pages to extract:");
 		pagesDesc.setBorder(new EmptyBorder(new Insets(0, 20, 0, 20)));
 		pagesDesc.setFont(font);
@@ -215,6 +215,7 @@ public class ModeExtractToImagesPanel extends JPanel {
 				
 				PageViewerDialog dialog = new PageViewerDialog(pageNumbers, sourcePathField.getText(), false);
 				if(passwordField.getPassword().length>0) dialog.setPassword(new String(passwordField.getPassword()));
+				dialog.startFilling();
 				dialog.showPages();
 			} catch(Exception exc) { //could not even build page numbers from user input
 				String fromInput = fromField.getText().isEmpty() ? "[EMPTY]" : fromField.getText();
@@ -239,7 +240,9 @@ public class ModeExtractToImagesPanel extends JPanel {
 		individualPagesPanel.setFont(font);
 		
 		JPanel pageSpecFlow = new JPanel(new FlowLayout(20));
-		pageSpecFlow.add(new JLabel("Pages to be extracted:"));
+		JLabel l = new JLabel("Pages to be extracted:");
+		l.setFont(font);
+		pageSpecFlow.add(l);
 		final JTextField csvPagesField = new JTextField();
 		csvPagesField.setToolTipText("Separate page numbers with a comma, or use the selector tool!");
 		csvPagesField.setColumns(20);
@@ -260,6 +263,7 @@ public class ModeExtractToImagesPanel extends JPanel {
 		selectorButton.addActionListener(e -> {
 			PageViewerDialog dialog = new PageViewerDialog(sourcePathField.getText(), true);
 			if(passwordField.getPassword().length>0) dialog.setPassword(new String(passwordField.getPassword()));
+			dialog.startFilling();
 			List<Integer> selectedPages = dialog.showPagesForResult();
 			//make csv string from result
 			StringBuilder b = new StringBuilder();

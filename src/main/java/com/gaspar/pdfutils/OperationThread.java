@@ -47,17 +47,20 @@ public class OperationThread extends Thread {
 					"Operation ongoing", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		setOperationOngoing(true);
-		SwingUtilities.invokeLater(() -> {
-			RootPanel.getInstance().changeOperationPanel(RootPanel.OPERATION_IN_PROGRESS); //update GUI to show ongoing operation
-			PdfUtilsMain.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		});
-		r.run(); //what is inside this method will update the progress on the UI
-		SwingUtilities.invokeLater(() -> {
-			RootPanel.getInstance().changeOperationPanel(RootPanel.OPERATION_DONE);
-			PdfUtilsMain.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		});
-		setOperationOngoing(false);
+		try {
+			setOperationOngoing(true);
+			SwingUtilities.invokeLater(() -> {
+				RootPanel.getInstance().changeOperationPanel(RootPanel.OPERATION_IN_PROGRESS); //update GUI to show ongoing operation
+				PdfUtilsMain.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			});
+			r.run(); //what is inside this method will update the progress on the UI
+		} finally {
+			SwingUtilities.invokeLater(() -> {
+				RootPanel.getInstance().changeOperationPanel(RootPanel.NO_OPERATION);
+				PdfUtilsMain.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			});
+			setOperationOngoing(false);
+		}
 	}
 
 	public static synchronized boolean isOperationOngoing() {
