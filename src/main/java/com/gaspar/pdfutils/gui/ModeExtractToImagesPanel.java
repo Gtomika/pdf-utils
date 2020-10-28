@@ -28,6 +28,7 @@ import com.gaspar.pdfutils.modes.ModeExtractToImages;
  * This panel displays options for the user to enter details about the 
  * image extraction, such as file path.
  * @author Gáspár Tamás
+ * @see ModeExtractToImages
  */
 public class ModeExtractToImagesPanel extends JPanel {
 
@@ -48,6 +49,9 @@ public class ModeExtractToImagesPanel extends JPanel {
 	 */
 	private final JTextField prefixField = new JTextField("img_");
 	
+	/**
+	 * Builds a panel where all input fields are empty.
+	 */
 	public ModeExtractToImagesPanel() {
 		final JPanel container = new JPanel();
 		container.setBorder(BorderFactory.createLineBorder(Color.BLACK));

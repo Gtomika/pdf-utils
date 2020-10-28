@@ -6,7 +6,7 @@ This small java project can perform the following operations on PDF files:
 - Create a sub PDF file from a selected range.
 - Assemble images into a PDF file.
 
-It comes with a *Swing GUI*. Currently **only the first 2 operations** is supported by the GUI!
+It comes with a *Swing GUI*.
 
 ## Planned functions
 

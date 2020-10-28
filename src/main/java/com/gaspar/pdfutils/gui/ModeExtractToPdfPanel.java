@@ -32,6 +32,7 @@ import com.gaspar.pdfutils.modes.ModeExtractToPdf;
  * This panel displays options for the user to enter details about the 
  * PDF extraction, such as file paths.
  * @author Gáspár Tamás
+ * @see ModeExtractToPdf
  */
 public class ModeExtractToPdfPanel extends JPanel {
 	/**
@@ -63,6 +64,9 @@ public class ModeExtractToPdfPanel extends JPanel {
 	 */
 	private JPasswordField resultPasswordConfirmField = new JPasswordField();
 	
+	/**
+	 * Builds a panel where all input fields are empty.
+	 */
 	public ModeExtractToPdfPanel() {
 		final JPanel container = new JPanel();
 		container.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -104,7 +108,7 @@ public class ModeExtractToPdfPanel extends JPanel {
 		sourcePanel.add(selectSourceButton);
 		container.add(sourcePanel);
 		
-		JPanel passwordFlow = new JPanel(new FlowLayout(20));
+		JPanel passwordFlow = new JPanel(fl);
 		JLabel pwdLabel = new JLabel("Password for PDF:");
 		pwdLabel.setFont(font);
 		passwordFlow.add(pwdLabel);
@@ -130,7 +134,7 @@ public class ModeExtractToPdfPanel extends JPanel {
 		destPanel.add(selectDestButton);
 		container.add(destPanel);
 		
-		JPanel nameFlow = new JPanel(new FlowLayout(20)); //name
+		JPanel nameFlow = new JPanel(fl); //name
 		JLabel nameLabel = new JLabel("Name of the result:");
 		nameLabel.setFont(font);
 		nameFlow.add(nameLabel);

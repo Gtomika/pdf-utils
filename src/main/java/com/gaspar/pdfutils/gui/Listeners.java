@@ -8,14 +8,19 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import com.gaspar.pdfutils.OperationThread;
 import com.gaspar.pdfutils.PdfUtilsMain;
+import com.gaspar.pdfutils.modes.ModeImagesToPdf;
 
 /**
  * Contains listeners for buttons so they dont pollute the code.
@@ -125,6 +130,49 @@ public abstract class Listeners {
 			int result = fileChooser.showOpenDialog(PdfUtilsMain.getFrame());
 			if(result == JFileChooser.APPROVE_OPTION) {
 				textField.setText(fileChooser.getSelectedFile().getPath());
+			}
+		};
+	}
+
+	/**
+	 * This listener can be added to buttons and it will open up a {@link JFileChooser} to open 
+	 * images from a folder.
+	 * @param images Save the result in this list, without removing its contents.
+	 * @param resultField Show the selected files in this field (all of them, not only the ones selected just now).
+	 * @return The listener.
+	 */
+	public static ActionListener openImageSelector(final List<File> images, final JTextArea resultField) {
+		return e -> {
+			final JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Select the images");
+			fileChooser.setMultiSelectionEnabled(true);
+			fileChooser.setAcceptAllFileFilterUsed(false);
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooser.setFileFilter(new FileFilter() {
+				@Override public String getDescription() { return null; }
+				@Override
+				public boolean accept(File f) {
+					if(f.isDirectory()) return true;
+					//supported image formats: JPG, JPEG, TIF, TIFF, GIF, BMP and PNG
+					String fileName = Paths.get(f.getPath()).getFileName().toString();
+					for(String supported: ModeImagesToPdf.SUPPORTED_FORMATS) {
+						if(fileName.endsWith("." + supported)) return true;
+					}
+					return false;
+				}
+			});
+			int result = fileChooser.showOpenDialog(PdfUtilsMain.getFrame());
+			if(result == JFileChooser.APPROVE_OPTION) {
+				images.addAll(Arrays.asList(fileChooser.getSelectedFiles()));
+				//update text field
+				StringBuilder sb = new StringBuilder();
+				for(int i=0; i<images.size(); i++) {
+					sb.append(Paths.get(images.get(i).getPath()).getFileName().toString());
+					if(i < images.size() - 1) sb.append(", ");
+				}
+				resultField.setText(sb.toString());
+				resultField.revalidate();
+				resultField.repaint();
 			}
 		};
 	}
