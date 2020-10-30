@@ -8,6 +8,11 @@ This small java project can perform the following operations on PDF files:
 
 It comes with a *Swing GUI*.
 
+## How to use
+
+Go the the releases page and download a JAR from any release. Start it with double clicking, or 
+from the command line using *java -jar*.  
+
 ## Planned functions
 
 I plan to add another operation, PDF encrypt and decrypt.

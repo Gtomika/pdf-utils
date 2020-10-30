@@ -24,9 +24,7 @@ import com.gaspar.pdfutils.gui.ModeExtractToImagesPanel;
 import com.gaspar.pdfutils.gui.RootPanel;
 
 /**
- * This mode extracts the specifies pages to separate images. The images will be suffixed in a way that 
- * ABC ordering their names will give sort them in their original order. This is useful to the mode 
- * {@link ModeImagesToPdf}, which will be able to combine these images in their original order!
+ * This mode extracts the specifies pages to separate images. You can use {@link ModeImagesToPdf} to recombine edited images.
  * <p>
  * You can give a range of pages using {@link ModeExtractToImages#ModeExtractToImages(int, int, String)} or specify 
  * individual pages using {@link ModeExtractToImages#ModeExtractToImages(List, String)}.
@@ -118,20 +116,11 @@ public class ModeExtractToImages extends Mode {
 				}
 			}
 			//now it does not matter if it was page range or not, _pageNumbers has the 0 based page indices
-			int amount = _pageNumbers.size();
-			int digits = String.valueOf(amount).length();
-			
 			int counter = 1;
 			for(int i: _pageNumbers) {
 				final BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300, ImageType.RGB);
 				
-				String orderingString = ""; //guarantes the same ABC ordering
-				for(int j = digits-1; j >= 0; j--) {
-					orderingString += (counter/(int) Math.pow(10, j));
-					if(j>0) orderingString += "_";
-				}
-				
-                String fileName = destPath + "/" + imageNamePrefix + orderingString + ".png";
+                String fileName = destPath + "/" + imageNamePrefix + String.valueOf(counter) + ".png";
                 ImageIO.write(image, "png", new File(fileName));
                 counter++;
                 
